@@ -1,16 +1,17 @@
 const Joi = require('@hapi/joi');
 
-const username = Joi.string().min(3).max(30);
-const password = Joi.string().min(8).max(40).lowercase(1).uppercase(1);
+const pattern = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!#.])[A-Za-z\d$@$!%*?&.]{8,32}/;
+const userName = Joi.string().min(3).max(30);
+const userPassword = Joi.string().regex(pattern).min(8).max(32);
 
 const userSchemaCreate = Joi.object({
-    username: username.required(),
-    password: password.required()
+    userName: userName.required(),
+    userPassword: userPassword.required()
 })
 
 const userSchemaUpdate = Joi.object({
-    username,
-    password
+    userName,
+    userPassword
 });
 
 module.exports = {
