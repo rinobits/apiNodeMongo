@@ -27,6 +27,7 @@ const searchUserById = () => {
 const createUser = () => {
     return (req, res, next) => {
         const {body} = req;
+        let {userName, userPassword} = body;
         userServices.createUser(body)
             .then(response => res.json({id: response}))
             .catch(err => next(err));
@@ -57,3 +58,4 @@ module.exports = {
     deleteUserById,
     localAuth
 };
+

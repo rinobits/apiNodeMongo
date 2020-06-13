@@ -2,7 +2,7 @@
 const express   = require('express');
 const router    = express.Router();
 // imports & cons
-const { control }   = require('./responses');
+const control   = require('./responses');
 const { userSchemaCreate, userSchemaUpdate } = require("./schemas");
 const validatorHandler = require('../../utils/middlewares/validatorHandler');
 
@@ -15,6 +15,3 @@ router.put('/:id', validatorHandler(userSchemaUpdate, 'body'), control.localAuth
 router.delete('/:id', control.localAuth, control.deleteUserById());
 module.exports = router;
 
-/**
- * 5ee2b3dbcd9707e7813a7e8a
- */

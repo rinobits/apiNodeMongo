@@ -39,7 +39,24 @@ class UserServices{
             return this.mongodb.findById(id);
     }
     createUser(body){
-        return this.mongodb.create(body);
+        let {userName, userPassword} = body;
+        return new Promise((resolve, reject) => {
+            bcrypt.hash(userPassword, 10)
+            .then(hash => {
+                this.mongodb.create({userName, hash})
+                .then(res => {
+                    if(res){
+                        resolve("Done");
+                    }
+                    reject("Nope");
+                })
+            })
+            .catch(err => {
+                console.log("can't hash => " + err);
+                reject("can't create user " + userName);
+            });
+        });
+        
     }
     updateUserById(id, body){
         return this.mongodb.updateById(id, body);
