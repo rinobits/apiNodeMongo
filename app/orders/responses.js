@@ -1,58 +1,79 @@
-// packages
-const passport = require('passport');
-require('../../utils/strategies/jwt');
-// imports & consts
-const CategoryServices = require('./services');
-const categoryServices = new CategoryServices();
-
-// Orders
-const createOrder = () => {
+// package
+const jwt                       = require('jsonwebtoken');
+// imports
+const {config:{authJwtSecret}}  = require('../../config');
+const OrderServices = require('./services');
+const orderServices = new OrderServices();
+const searchOrders = () => {
     return (req, res, next) => {
-        const {body} = req;
-        categoryServices.create(body)
-        .then(response => res.json({id: response}))
-        .catch(err => next(err));
-    }
+        orderServices.findOrders()
+            .then(responses => res.json(responses))
+            .catch(err => {
+                res.send("Not Done")
+            })    }
 }
-const getAllOrders = () => {
-    return (req, res, next) =>  {
-        categoryServices.getAll()
-        .then(responses => res.json(responses))
-        .catch(err => next(err));
-    }
-}
-const getOrdersById = () => {
+const searchOrderById = () => {
     return (req, res, next) => {
         const {id} = req.params;
-        categoryServices.getById(id)
-        .then(response => res.json(response))
-        .catch(err => next(err));
-    }
+        orderServices.findOrderById(id)
+            .then(response => {
+                delete response.orderPassword;
+                res.json({'order': response})
+            })
+            .catch(err => {
+                res.send("Not Done")
+            })    }
+}
+const createOrder = () => {
+    return (req, res, next) => {
+        jwt.verify(req.token, authJwtSecret, (err, auth) => {
+            if(err){
+            }else{
+                const {body} = req;
+                orderServices.createOrder(body)
+                    .then(response => res.json({id: response}))
+                    .catch(err => {
+                        res.send("Not Created")
+                    })
+            }
+        });
+        }
 }
 const updateOrderById = () => {
     return (req, res, next) => {
-        const {body} = req; 
-        const {id}   = req.params;
-        categoryServices.updateById(id, body)
-        .then(response => res.json({id: response}))
-        .catch(err => next(err));
-    }
+        jwt.verify(req.token, authJwtSecret, (err, auth) => {
+            if(err){
+            }else{
+                const {body} = req;
+                const {id}   = req.params;
+                orderServices.updateOrderById(id, body) // (!)
+                    .then(response => res.json({id: response}))
+                    .catch(err => {
+                        res.send("Not Updated")
+                    })
+            }
+        });
+        }
 }
 const deleteOrderById = () => {
     return (req, res, next) => {
-        const {id} = req.params;
-        categoryServices.deleteById(id)
-        .then(response => res.json({'message' : 'ok'}))
-        .catch(err => next(err));
+        jwt.verify(req.token, authJwtSecret, (err, auth) => {
+            if(err){
+            }else{
+                const {id} = req.params
+                orderServices.deleteOrderById(id)
+                    .then(response => res.json({'message' : 'order deleted'}))
+                    .catch(err => {
+                        res.send("Not Deleted")
+                    })
+            }
+        });
     }
 }
-
-const jwtAuth = passport.authenticate('jwt', {session:false});
 module.exports = {
-    getAllOrders,
-    getOrdersById,
-    updateOrderById,
-    deleteOrderById,
+    searchOrders,
+    searchOrderById,
     createOrder,
-    jwtAuth
-}
+    updateOrderById,
+    deleteOrderById};
+

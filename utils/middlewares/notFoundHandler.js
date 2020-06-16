@@ -6,5 +6,4 @@ const notFoundHandler = (req, res) => {
         res.status(statusCode).json({'error' : payload});
     }
 }
-
 module.exports = notFoundHandler;

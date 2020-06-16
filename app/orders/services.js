@@ -1,26 +1,50 @@
-const Mongo = require('../../lib/mongo');
-
-class OrderService{
-    constructor(){
-        this.mongodb = new Mongo('orders');
+const {Orders} = require('../../lib/database');
+class OrderServices{
+    findOrders(){
+        return new Promise((resolve, reject) => {
+            Orders.findAll()
+                .then(r => resolve({"ALL USERS => " : r}))
+                .catch(e => reject(e));
+        });
     }
-    // developers
-    getAll(){
-        return this.mongodb.find();
+    findOrderById(id){
+        return new Promise((resolve, reject) => {
+            Orders.findByPk(id)
+                .then(r => resolve({'user':r}))
+                .catch(e => reject(e));
+        });
     }
-    getById(id){
-        return this.mongodb.findById(id);
+    createOrder(body){
+        return new Promise((resolve, reject) => {
+            Orders.create(body)
+                .then(console.log)
+                .catch(console.log);
+        });
     }
-    // admin
-    create(body){
-        return this.mongodb.create(body);
+    updateOrderById(id, body){
+        return new Promise((resolve, reject) => {
+            Orders.update(body, {
+                where: {id: id}
+            })
+            .then(r => {
+                if(r == 1) resolve({"MODIFY DATA": true})
+                else reject({"MODIFY DATA:": false})
+            })
+            .catch(e => reject(e));
+        });
     }
-    updateById(id, data){
-        return this.mongodb.updateById(id, data);
+    deleteOrderById(id){
+        return new Promise((resolve, reject) => {
+            Orders.destroy({
+                where: {id}
+            })
+            .then(r => {
+                if(r == 1) resolve({"DELETE DATA": true})
+                else reject({"DELETE DATA:": false})
+            })
+            .catch(e => reject(e));
+        });
     }
-    deleteById(id){
-        return this.mongodb.deleteById(id);
-    }
+    
 }
-
-module.exports = OrderService;
+module.exports = OrderServices;

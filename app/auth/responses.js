@@ -1,30 +1,14 @@
 // packages
-const passport  = require('passport');
-const boom      = require('@hapi/boom');
-const jwt       = require('jsonwebtoken');
+const jwt                       = require('jsonwebtoken');
 // imports
-const {config}        = require('../../config');
-const {authJwtSecret} = config;
-require("../../utils/strategies/local");
-require('../../utils/strategies/jwt');
+const {config:{authJwtSecret}}  = require('../../config');
+const Auth                      = require('./services');
 
-localAuth = passport.authenticate('jwt', {session: false});
-
-authGet = (req, res, next) => {
-    res.json({user: req.user}); 
-}
-authPost = (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
-        if(err || !user){
-            next(boom.unauthorized());
-        }else{
-            const token = jwt.sign(user, authJwtSecret, {expiresIn: "1h"});
-            res.json({user, token});
-        }
-    })(req, res, next);
+const login = (req, res) => {
+    Auth(req.body.userName, req.body.userPassword)
+        .then(r => res.json({response : r}))
+        .catch(e => res.json({error: e}));
 }
 module.exports = {
-    localAuth,
-    authGet,
-    authPost
+    login
 }

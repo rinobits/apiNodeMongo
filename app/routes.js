@@ -5,7 +5,7 @@ const express    = require('express');
 const orders     = require('../app/orders/routes');
 const products   = require('../app/products/routes');
 const auth       = require('../app/auth/routes');
-const findByUser = require('../app/users/routes');
+const user       = require('../app/users/routes');
 
 const index = (app) => {
     const router = express.Router();
@@ -13,6 +13,6 @@ const index = (app) => {
     router.use('/orders', orders);
     router.use('/products', products);
     router.use('/auth', auth);
-    router.use('/users', findByUser);
+    router.use('/users', user);
 }
 module.exports = index;

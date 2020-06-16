@@ -1,15 +1,18 @@
 // packages
-const express = require('express');
-const router  = express.Router();
-// imports
-const { getAllProducts, getProductsById, createProduct, updateProductById, deleteProductById } = require('./responses');
+const express               = require('express');
+const router                = express.Router();
+// imports          
+const control               = require('./responses');
+const validatorHandler      = require('../../utils/middlewares/validatorHandler');
+const verifyToken           = require('../../utils/middlewares/verifyToken');
+const { deleteProductById } = require('./responses');
 const { productSchemaCreate, productSchemaUpdate } = require('./schemas');
-const validatorHandler = require('../../utils/middlewares/validatorHandler');
+
 // developer
-router.get('/', getAllProducts());
-router.get('/:id', getProductsById());
+router.get('/', control.searchProducts());
+router.get('/:id', control.searchProductById());
 // admin
-router.post('/', validatorHandler(productSchemaCreate, 'body'),createProduct());
-router.put('/:id', validatorHandler(productSchemaUpdate, 'body'), updateProductById());
-router.delete('/:id', deleteProductById());
+router.post('/', validatorHandler(productSchemaCreate, 'body'),verifyToken, control.createProduct());
+router.put('/:id', validatorHandler(productSchemaUpdate, 'body'),verifyToken, control.updateProductById());
+router.delete('/:id', verifyToken, deleteProductById());
 module.exports = router;
